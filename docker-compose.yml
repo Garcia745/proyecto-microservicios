@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  empleados-service:
+    build: ./empleados
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo-empleados
+      - departamentos-service
+    environment:
+      - DEPARTAMENTOS_URL=http://departamentos-service:8081
+      - MONGO_URI=mongodb://mongo-empleados:27017/empleadosDB
+    networks:
+      - microservices-net
+
+  departamentos-service:
+    build: ./departamentos
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo-departamentos
+    environment:
+      - MONGO_URI=mongodb://mongo-departamentos:27017/departments
+    networks:
+      - microservices-net
+
+  mongo-empleados:
+    image: mongo:7
+    container_name: mongo-empleados
+    ports:
+      - "27018:27017"
+    volumes:
+      - empleados-data:/data/db
+    networks:
+      - microservices-net
+
+  mongo-departamentos:
+    image: mongo:7
+    container_name: mongo-departamentos
+    ports:
+      - "27019:27017"
+    volumes:
+      - departamentos-data:/data/db
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+
+volumes:
+  empleados-data:
+  departamentos-data:
