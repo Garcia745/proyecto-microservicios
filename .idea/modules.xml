@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/departamentos-service/proyecto-microservicios.departamentos-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/departamentos-service/proyecto-microservicios.departamentos-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/empleados-service/proyecto-microservicios.empleados-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/empleados-service/proyecto-microservicios.empleados-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/empleados-service/proyecto-microservicios.empleados-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/empleados-service/proyecto-microservicios.empleados-service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notificaciones-service/proyecto-microservicios.notificaciones-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/notificaciones-service/proyecto-microservicios.notificaciones-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notificaciones-service/proyecto-microservicios.notificaciones-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/notificaciones-service/proyecto-microservicios.notificaciones-service.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/perfiles-service/proyecto-microservicios.perfiles-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/perfiles-service/proyecto-microservicios.perfiles-service.main.iml" />
+    </modules>
+  </component>
+</project>
