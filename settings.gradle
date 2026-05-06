@@ -1,0 +1,6 @@
+rootProject.name = 'proyecto-microservicios'
+
+include 'departamentos-service'
+include 'empleados-service'
+include 'perfiles-service'
+include 'notificaciones-service'
