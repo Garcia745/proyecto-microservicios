@@ -1,16 +1,13 @@
-// Plugins principales: Java y Spring Boot
 plugins {
-	id 'java' // Soporte Java
-	id 'org.springframework.boot' version '3.3.5' // Spring Boot
-	id 'io.spring.dependency-management' version '1.1.7' // Gestión de dependencias
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-// Información del proyecto
 group = 'com.empresa'
 version = '0.0.1-SNAPSHOT'
 description = 'empresa - Spring Boot'
 
-// Configuración de Java 17
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
@@ -21,55 +18,70 @@ ext {
 	set('springCloudVersion', "2023.0.3")
 }
 
+repositories {
+	mavenCentral()
+}
+
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
 }
 
-// Repositorios de dependencias
-repositories {
-	mavenCentral() // Repositorio central de Maven
-}
-
-// Dependencias del proyecto
 dependencies {
-	// Spring Web y validación
+
+	// =========================
+	// WEB
+	// =========================
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	// MapStruct para mapeo de DTOs
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
-
-	// MongoDB
+	// =========================
+	// MONGODB
+	// =========================
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-	// Herramientas de desarrollo
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// =========================
+	// RABBITMQ (EVENTOS)
+	// =========================
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
-	// Lombok
+	// =========================
+	// RESILIENCE / CIRCUIT BREAKER
+	// =========================
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+
+	// =========================
+	// OPENAPI
+	// =========================
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+	// =========================
+	// MAPSTRUCT
+	// =========================
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+	// =========================
+	// LOMBOK + INTEGRATION
+	// =========================
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-	// Pruebas
+	// =========================
+	// TEST
+	// =========================
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Resiliencia (Circuit Breaker)
-	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
-
-	// Documentación OpenAPI (Swagger)
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-	// Necesario para el manejo de aspectos en Circuit Breaker
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	// =========================
+	// DEVTOOLS
+	// =========================
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
-// Configuración de tests con JUnit Platform
 tasks.named('test') {
 	useJUnitPlatform()
 }

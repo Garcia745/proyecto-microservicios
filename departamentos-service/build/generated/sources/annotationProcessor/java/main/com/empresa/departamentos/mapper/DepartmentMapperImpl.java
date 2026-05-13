@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-03T21:03:46-0500",
+    date = "2026-05-12T16:21:27-0500",
     comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.14.4.jar, environment: Java 17.0.17 (Eclipse Adoptium)"
 )
 @Component
@@ -22,12 +22,12 @@ public class DepartmentMapperImpl implements DepartmentMapper {
             return null;
         }
 
-        Department department = new Department();
+        Department.DepartmentBuilder department = Department.builder();
 
-        department.setNombre( dto.getNombre() );
-        department.setDescripcion( dto.getDescripcion() );
+        department.nombre( dto.getNombre() );
+        department.descripcion( dto.getDescripcion() );
 
-        return department;
+        return department.build();
     }
 
     @Override

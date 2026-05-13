@@ -30,7 +30,7 @@ public class PerfilService {
 
         return repository.findByEmpleadoId(empleadoId)
                 .map(perfil -> {
-                    log.warn("Perfil ya existe: {}", empleadoId);
+                    log.warn("Perfil ya existe para empleadoId: {}", empleadoId);
                     return mapper.toResponseDTO(perfil);
                 })
                 .orElseGet(() -> {
@@ -47,7 +47,7 @@ public class PerfilService {
                             .fechaCreacion(LocalDateTime.now())
                             .build();
 
-                    log.info("Creando perfil para empleado: {}", empleadoId);
+                    log.info("[PERFIL CREADO] Para empleadoId: {}, Nombre: {}, Email: {}", empleadoId, nombre, email);
                     return mapper.toResponseDTO(repository.save(perfil));
                 });
     }
@@ -56,7 +56,7 @@ public class PerfilService {
     public PerfilResponseDTO desactivarPerfil(String empleadoId) {
 
         Perfil perfil = repository.findByEmpleadoId(empleadoId)
-                .orElseThrow(() -> new PerfilNotFoundException("Perfil no encontrado"));
+                .orElseThrow(() -> new PerfilNotFoundException("Perfil no encontrado para empleadoId: " + empleadoId));
 
         if (!perfil.isActivo()) {
             log.warn("Perfil ya desactivado: {}", empleadoId);
@@ -66,7 +66,7 @@ public class PerfilService {
         perfil.setActivo(false);
         Perfil actualizado = repository.save(perfil);
 
-        log.info("Perfil desactivado: {}", empleadoId);
+        log.info("[PERFIL DESACTIVADO] Para empleadoId: {}, Nombre: {}", empleadoId, actualizado.getNombre());
         return mapper.toResponseDTO(actualizado);
     }
 

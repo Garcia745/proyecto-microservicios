@@ -1,31 +1,101 @@
-version: '3.8'
+version: '3.9'
 
 services:
 
+  # =========================================================
+  # EMPLEADOS SERVICE
+  # =========================================================
   empleados-service:
-    build: ./empleados
+    build: ./empleados-service
     ports:
       - "8080:8080"
     depends_on:
-      - mongo-empleados
-      - departamentos-service
+      mongo-empleados:
+        condition: service_healthy
+      departamentos-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
     environment:
       - DEPARTAMENTOS_URL=http://departamentos-service:8081
       - MONGO_URI=mongodb://mongo-empleados:27017/empleadosDB
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     networks:
       - microservices-net
 
+  # =========================================================
+  # DEPARTAMENTOS SERVICE
+  # =========================================================
   departamentos-service:
-    build: ./departamentos
+    build: ./departamentos-service
     ports:
       - "8081:8081"
     depends_on:
-      - mongo-departamentos
+      mongo-departamentos:
+        condition: service_healthy
     environment:
       - MONGO_URI=mongodb://mongo-departamentos:27017/departments
     networks:
       - microservices-net
 
+  # =========================================================
+  # PERFILES SERVICE
+  # =========================================================
+  perfiles-service:
+    build: ./perfiles-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mongo-perfiles
+      - rabbitmq
+    environment:
+      - MONGO_URI=mongodb://mongo-perfiles:27017/perfiles_db
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # NOTIFICACIONES SERVICE
+  # =========================================================
+  notificaciones-service:
+    build: ./notificaciones-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      mongo-notificaciones:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    environment:
+      - MONGO_URI=mongodb://mongo-notificaciones:27017/notificaciones_bd
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # RABBITMQ
+  # =========================================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # MONGO EMPLEADOS
+  # =========================================================
   mongo-empleados:
     image: mongo:7
     container_name: mongo-empleados
@@ -33,9 +103,17 @@ services:
       - "27018:27017"
     volumes:
       - empleados-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - microservices-net
 
+  # =========================================================
+  # MONGO DEPARTAMENTOS
+  # =========================================================
   mongo-departamentos:
     image: mongo:7
     container_name: mongo-departamentos
@@ -43,6 +121,47 @@ services:
       - "27019:27017"
     volumes:
       - departamentos-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # MONGO PERFILES
+  # =========================================================
+  mongo-perfiles:
+    image: mongo:7
+    container_name: mongo-perfiles
+    ports:
+      - "27020:27017"
+    volumes:
+      - perfiles-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # MONGO NOTIFICACIONES
+  # =========================================================
+  mongo-notificaciones:
+    image: mongo:7
+    container_name: mongo-notificaciones
+    ports:
+      - "27021:27017"
+    volumes:
+      - notificaciones-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - microservices-net
 
@@ -52,3 +171,5 @@ networks:
 volumes:
   empleados-data:
   departamentos-data:
+  perfiles-data:
+  notificaciones-data:

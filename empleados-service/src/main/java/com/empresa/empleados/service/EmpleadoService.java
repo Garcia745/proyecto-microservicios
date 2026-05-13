@@ -1,9 +1,8 @@
 package com.empresa.empleados.service;
 
-import com.empresa.empleados.dto.ApiResponse;
+import com.empresa.empleados.dto.*;
+import com.empresa.empleados.messaging.EmpleadoEventPublisher;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import com.empresa.empleados.dto.DepartamentoDTO;
-import com.empresa.empleados.dto.EmpleadoResponseDTO;
 import com.empresa.empleados.exception.DepartamentoNotFoundException;
 import com.empresa.empleados.exception.EmpleadoNotFoundException;
 import com.empresa.empleados.mapper.EmpleadoMapper;
@@ -39,6 +38,9 @@ public class EmpleadoService {
 
     @Autowired
     private EmpleadoRepository repository;
+
+    @Autowired
+    private EmpleadoEventPublisher eventPublisher;
 
     @Autowired
     private EmpleadoMapper mapper;
@@ -90,6 +92,8 @@ public class EmpleadoService {
         }
 
         Empleado guardado = repository.save(empleado);
+        EmpleadoCreadoEventDTO eventEmpleado=mapper.toEvent(guardado);
+        eventPublisher.publicarCreado(eventEmpleado);
         EmpleadoResponseDTO dto = mapper.toResponse(guardado);
         dto.setDepartamento(departamento);
         return dto;
@@ -109,8 +113,13 @@ public class EmpleadoService {
     }
 
     public EmpleadoResponseDTO eliminarEmpleado(String id) {
-        EmpleadoResponseDTO empleado = obtenerEmpleado(id);
+
+        EmpleadoResponseDTO empleadoDTO = obtenerEmpleado(id);
+        Empleado empleado = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        EmpleadoEliminadoEventDTO eventEmpleado = mapper.toEliminadoEvent(empleado);
         repository.deleteById(id);
-        return empleado;
+        eventPublisher.publicarEliminado(eventEmpleado);
+        return empleadoDTO;
     }
 }

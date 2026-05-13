@@ -17,5 +17,4 @@ public class PerfilUpdateDTO {
     @Size(max = 255)
     private String biografia;
 
-    // Getters y setters
 }

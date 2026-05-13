@@ -1,64 +1,103 @@
-package com.empresa.notificaciones_service.config;
+package com.empresa.notificaciones_service.Config;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuración de RabbitMQ para el microservicio de NOTIFICACIONES.
- * Define la infraestructura para que este servicio sea puramente reactivo.
+ * Configuración RabbitMQ del microservicio de NOTIFICACIONES.
+ *
+ * Este servicio consume dos eventos:
+ * - empleado.creado
+ * - empleado.eliminado
+ *
+ * Cada evento tiene su propia cola para separar responsabilidades.
  */
 @Configuration
 public class RabbitConfig {
 
+    /**
+     * Nombre del exchange compartido entre microservicios.
+     */
     @Value("${rabbitmq.exchange}")
     private String exchangeName;
 
-    @Value("${rabbitmq.queue.notificaciones}")
-    private String queueName;
-
+    /**
+     * Routing key para empleado creado.
+     */
     @Value("${rabbitmq.routingkey.creado}")
     private String routingKeyCreado;
 
+    /**
+     * Routing key para empleado eliminado.
+     */
     @Value("${rabbitmq.routingkey.eliminado}")
     private String routingKeyEliminado;
 
-    // 🔹 El Exchange debe llamarse IGUAL que en los otros servicios
+    /**
+     * Exchange principal.
+     */
     @Bean
     public TopicExchange exchange() {
         return new TopicExchange(exchangeName);
     }
 
-    // 🔹 Esta es la cola PROPIA de este servicio
+    /**
+     * Cola para eventos de creación de empleados.
+     */
     @Bean
-    public Queue notificacionesQueue() {
-        return new Queue(queueName, true);
+    public Queue creadoQueue() {
+        return new Queue("notificaciones-creado-queue", true);
     }
 
-    // 🔹 Vincula la cola de notificaciones al evento creado
+    /**
+     * Cola para eventos de eliminación de empleados.
+     */
     @Bean
-    public Binding bindingNotificacionCreado(Queue notificacionesQueue, TopicExchange exchange) {
+    public Queue eliminadoQueue() {
+        return new Queue("notificaciones-eliminado-queue", true);
+    }
+
+    /**
+     * Binding:
+     * empleado.creado -> notificaciones-creado-queue
+     */
+    @Bean
+    public Binding bindingCreado(
+            Queue creadoQueue,
+            TopicExchange exchange) {
+
         return BindingBuilder
-                .bind(notificacionesQueue)
+                .bind(creadoQueue)
                 .to(exchange)
                 .with(routingKeyCreado);
     }
 
-    // 🔹 Vincula la cola de notificaciones al evento eliminado
+    /**
+     * Binding:
+     * empleado.eliminado -> notificaciones-eliminado-queue
+     */
     @Bean
-    public Binding bindingNotificacionEliminado(Queue notificacionesQueue, TopicExchange exchange) {
+    public Binding bindingEliminado(
+            Queue eliminadoQueue,
+            TopicExchange exchange) {
+
         return BindingBuilder
-                .bind(notificacionesQueue)
+                .bind(eliminadoQueue)
                 .to(exchange)
                 .with(routingKeyEliminado);
     }
 
     /**
-     * 🔹 CRÍTICO: Convertidor de mensajes a JSON.
-     * Permite que el @RabbitListener convierta automáticamente el JSON del broker
-     * al objeto EmpleadoEventDTO de Java.
+     * Convertidor JSON.
+     *
+     * Permite convertir automáticamente mensajes JSON
+     * recibidos desde RabbitMQ a objetos Java.
      */
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {

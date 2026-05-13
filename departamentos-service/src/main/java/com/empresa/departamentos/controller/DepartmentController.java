@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/departments") // Se recomienda agregar /api/v1 para seguir estándares
+@RequestMapping("departments") // Se recomienda agregar /api/v1 para seguir estándares
 @Tag(name = "Department Controller", description = "Endpoints para la gestión de departamentos en MongoDB")
 public class DepartmentController {
 

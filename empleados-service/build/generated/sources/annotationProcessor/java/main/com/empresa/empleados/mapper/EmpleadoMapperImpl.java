@@ -1,5 +1,7 @@
 package com.empresa.empleados.mapper;
 
+import com.empresa.empleados.dto.EmpleadoCreadoEventDTO;
+import com.empresa.empleados.dto.EmpleadoEliminadoEventDTO;
 import com.empresa.empleados.dto.EmpleadoRequestDTO;
 import com.empresa.empleados.dto.EmpleadoResponseDTO;
 import com.empresa.empleados.model.Empleado;
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-04T12:36:47-0500",
+    date = "2026-05-12T23:06:12-0500",
     comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-9.3.0.jar, environment: Java 17.0.17 (Eclipse Adoptium)"
 )
 @Component
@@ -44,5 +46,36 @@ public class EmpleadoMapperImpl implements EmpleadoMapper {
         empleadoResponseDTO.setFechaIngreso( empleado.getFechaIngreso() );
 
         return empleadoResponseDTO;
+    }
+
+    @Override
+    public EmpleadoCreadoEventDTO toEvent(Empleado empleado) {
+        if ( empleado == null ) {
+            return null;
+        }
+
+        EmpleadoCreadoEventDTO empleadoCreadoEventDTO = new EmpleadoCreadoEventDTO();
+
+        empleadoCreadoEventDTO.setId( empleado.getId() );
+        empleadoCreadoEventDTO.setNombre( empleado.getNombre() );
+        empleadoCreadoEventDTO.setEmail( empleado.getEmail() );
+        empleadoCreadoEventDTO.setFechaIngreso( empleado.getFechaIngreso() );
+
+        return empleadoCreadoEventDTO;
+    }
+
+    @Override
+    public EmpleadoEliminadoEventDTO toEliminadoEvent(Empleado empleado) {
+        if ( empleado == null ) {
+            return null;
+        }
+
+        EmpleadoEliminadoEventDTO empleadoEliminadoEventDTO = new EmpleadoEliminadoEventDTO();
+
+        empleadoEliminadoEventDTO.setId( empleado.getId() );
+        empleadoEliminadoEventDTO.setNombre( empleado.getNombre() );
+        empleadoEliminadoEventDTO.setEmail( empleado.getEmail() );
+
+        return empleadoEliminadoEventDTO;
     }
 }

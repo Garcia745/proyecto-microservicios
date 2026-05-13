@@ -1,5 +1,7 @@
 package com.empresa.empleados.mapper;
 
+import com.empresa.empleados.dto.EmpleadoCreadoEventDTO;
+import com.empresa.empleados.dto.EmpleadoEliminadoEventDTO;
 import com.empresa.empleados.dto.EmpleadoRequestDTO;
 import com.empresa.empleados.dto.EmpleadoResponseDTO;
 import com.empresa.empleados.model.Empleado;
@@ -10,4 +12,6 @@ public interface EmpleadoMapper {
 
         Empleado toEntity(EmpleadoRequestDTO dto);
         EmpleadoResponseDTO toResponse(Empleado empleado);
+        EmpleadoCreadoEventDTO toEvent(Empleado empleado);
+        EmpleadoEliminadoEventDTO toEliminadoEvent(Empleado empleado);
 }

@@ -6,14 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-/**
- * 🔹 Listener de eventos de empleados
- *
- * Escucha eventos desde RabbitMQ y ejecuta acciones en perfiles:
- *
- * - CREADO → crea perfil automáticamente
- * - ELIMINADO → desactiva perfil (soft delete)
- */
 @Slf4j
 @Component
 public class PerfilEventListener {
@@ -25,40 +17,41 @@ public class PerfilEventListener {
     }
 
     /**
-     * Este método se ejecuta cada vez que llega un mensaje a la cola.
-     *
-     * Spring convierte automáticamente el JSON → EmpleadoEventDTO
+     * Evento: empleado creado
      */
-    @RabbitListener(queues = "${rabbitmq.queue.perfiles}")
-    public void procesarEventoEmpleado(EmpleadoEventDTO evento) {
+    @RabbitListener(queues = "perfiles-creado-queue")
+    public void procesarEmpleadoCreado(EmpleadoEventDTO evento) {
+        try {
+            log.info("===== EVENTO DE CREACIÓN DE EMPLEADO RECIBIDO =====");
+            log.info("ID: {}, Nombre: {}, Email: {}", evento.getId(), evento.getNombre(), evento.getEmail());
 
-        // 🔹 Validación básica para evitar errores
-        if (evento.getEvento() == null || evento.getId() == null) {
-            log.warn("Evento inválido recibido: {}", evento);
-            return;
+            perfilService.crearPerfilPorDefecto(
+                    evento.getId(),
+                    evento.getNombre(),
+                    evento.getEmail()
+            );
+
+            log.info("===== PERFIL CREADO EXITOSAMENTE =====");
+        } catch (Exception e) {
+            log.error("Error procesando evento de creación de empleado: {}", e.getMessage(), e);
         }
+    }
 
-        log.info("Evento recibido: {} - ID: {} - Nombre: {}",
-                evento.getEvento(),
-                evento.getId(),
-                evento.getNombre());
+    /**
+     * Evento: empleado eliminado
+     */
+    @RabbitListener(queues = "perfiles-eliminado-queue")
+    public void procesarEmpleadoEliminado(EmpleadoEventDTO evento) {
+        try {
+            log.info("===== EVENTO DE ELIMINACIÓN DE EMPLEADO RECIBIDO =====");
+            log.info("ID: {}, Nombre: {}, Email: {}", evento.getId(), evento.getNombre(), evento.getEmail());
 
-        switch (evento.getEvento().toUpperCase()) {
+            perfilService.desactivarPerfil(evento.getId());
 
-            case "CREADO":
-                perfilService.crearPerfilPorDefecto(
-                        evento.getId(),
-                        evento.getNombre(),
-                        evento.getEmail()
-                );
-                break;
-
-            case "ELIMINADO":
-                perfilService.desactivarPerfil(evento.getId());
-                break;
-
-            default:
-                log.warn("Evento no reconocido: {}", evento.getEvento());
+            log.info("===== PERFIL DESACTIVADO EXITOSAMENTE =====");
+        } catch (Exception e) {
+            log.error("Error procesando evento de eliminación de empleado: {}", e.getMessage(), e);
         }
     }
 }
+

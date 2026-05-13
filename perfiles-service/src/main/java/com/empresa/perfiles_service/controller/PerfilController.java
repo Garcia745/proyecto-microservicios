@@ -5,6 +5,7 @@ import com.empresa.perfiles_service.dto.PerfilResponseDTO;
 import com.empresa.perfiles_service.dto.PerfilUpdateDTO;
 import com.empresa.perfiles_service.service.PerfilService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,16 @@ public class PerfilController {
     // 🔹 Obtener todos los perfiles
     @GetMapping
     public ResponseEntity<ApiResponse<List<PerfilResponseDTO>>> listarPerfiles() {
-
-        List<PerfilResponseDTO> perfiles = service.listarPerfiles();
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(true, "Perfiles encontrados", perfiles)
-        );
+        try {
+            List<PerfilResponseDTO> perfiles = service.listarPerfiles();
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Perfiles encontrados", perfiles)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ApiResponse<>(false, "Error al listar perfiles: " + e.getMessage(), null)
+            );
+        }
     }
 
     // 🔹 Obtener perfil por empleadoId

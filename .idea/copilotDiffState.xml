@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/notificaciones-service/src/test/java/com/empresa/notificaciones_service/NotificacionesServiceApplicationTests.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/notificaciones-service/src/test/java/com/empresa/notificaciones_service/NotificacionesServiceApplicationTests.java" />
+              <option name="originalContent" value="package com.empresa.notificaciones_service;&#10;&#10;import org.junit.jupiter.api.Test;&#10;import org.springframework.boot.test.context.SpringBootTest;&#10;import org.springframework.test.context.TestPropertySource;&#10;&#10;@SpringBootTest&#10;@TestPropertySource(properties = {&#10;    &quot;MONGO_URI=mongodb://localhost:27017/testdb&quot;,&#10;    &quot;RABBIT_HOST=localhost&quot;,&#10;    &quot;RABBIT_USER=guest&quot;,&#10;    &quot;RABBIT_PASS=guest&quot;&#10;})&#10;class NotificacionesServiceApplicationTests {&#10;&#10;&#9;@Test&#10;&#9;void contextLoads() {&#10;&#9;}&#10;&#10;}&#10;" />
+              <option name="updatedContent" value="package com.empresa.notificaciones_service;&#10;&#10;import org.junit.jupiter.api.Test;&#10;&#10;class NotificacionesServiceApplicationTests {&#10;&#10;&#9;@Test&#10;&#9;void contextLoads() {&#10;&#9;}&#10;&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
