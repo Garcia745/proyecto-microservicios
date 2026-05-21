@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/departamentos-service/com.empresa.proyecto-microservicios.departamentos-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/departamentos-service/com.empresa.proyecto-microservicios.departamentos-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/empleados-service/com.empresa.proyecto-microservicios.empleados-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/empleados-service/com.empresa.proyecto-microservicios.empleados-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notificaciones-service/com.empresa.proyecto-microservicios.notificaciones-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/notificaciones-service/com.empresa.proyecto-microservicios.notificaciones-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/perfiles-service/com.empresa.proyecto-microservicios.perfiles-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/perfiles-service/com.empresa.proyecto-microservicios.perfiles-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/proyecto-microservicios.iml" filepath="$PROJECT_DIR$/.idea/modules/proyecto-microservicios.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth-service/proyecto-microservicios.auth-service.iml" filepath="$PROJECT_DIR$/.idea/modules/auth-service/proyecto-microservicios.auth-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth-service/proyecto-microservicios.auth-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/auth-service/proyecto-microservicios.auth-service.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/departamentos-service/proyecto-microservicios.departamentos-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/departamentos-service/proyecto-microservicios.departamentos-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/empleados-service/proyecto-microservicios.empleados-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/empleados-service/proyecto-microservicios.empleados-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/notificaciones-service/proyecto-microservicios.notificaciones-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/notificaciones-service/proyecto-microservicios.notificaciones-service.main.iml" />

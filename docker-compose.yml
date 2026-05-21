@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
 
   # =========================================================
@@ -7,15 +5,22 @@ services:
   # =========================================================
   empleados-service:
     build: ./empleados-service
+    restart: unless-stopped
     ports:
       - "8080:8080"
     depends_on:
       mongo-empleados:
         condition: service_healthy
       departamentos-service:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
     environment:
       - DEPARTAMENTOS_URL=http://departamentos-service:8081
       - MONGO_URI=mongodb://mongo-empleados:27017/empleadosDB
@@ -31,11 +36,18 @@ services:
   # =========================================================
   departamentos-service:
     build: ./departamentos-service
+    restart: unless-stopped
     ports:
       - "8081:8081"
     depends_on:
       mongo-departamentos:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
     environment:
       - MONGO_URI=mongodb://mongo-departamentos:27017/departments
     networks:
@@ -46,11 +58,20 @@ services:
   # =========================================================
   perfiles-service:
     build: ./perfiles-service
+    restart: unless-stopped
     ports:
       - "8083:8083"
     depends_on:
-      - mongo-perfiles
-      - rabbitmq
+      mongo-perfiles:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8083/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
     environment:
       - MONGO_URI=mongodb://mongo-perfiles:27017/perfiles_db
       - RABBITMQ_HOST=rabbitmq
@@ -65,6 +86,7 @@ services:
   # =========================================================
   notificaciones-service:
     build: ./notificaciones-service
+    restart: unless-stopped
     ports:
       - "8084:8084"
     depends_on:
@@ -72,6 +94,12 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8084/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
     environment:
       - MONGO_URI=mongodb://mongo-notificaciones:27017/notificaciones_bd
       - RABBITMQ_HOST=rabbitmq
@@ -86,7 +114,7 @@ services:
   # =========================================================
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    restart: unless-stopped
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -94,74 +122,122 @@ services:
       - microservices-net
 
   # =========================================================
-  # MONGO EMPLEADOS
+  # PROMETHEUS
+  # =========================================================
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # GRAFANA
+  # =========================================================
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # ZIPKIN
+  # =========================================================
+  zipkin:
+    image: openzipkin/zipkin:latest
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # LOKI
+  # =========================================================
+  loki:
+    image: grafana/loki:latest
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki/loki-config.yml:/etc/loki/config.yml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/config.yml
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # PROMTAIL
+  # =========================================================
+  promtail:
+    image: grafana/promtail:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./observability/promtail/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - microservices-net
+
+  # =========================================================
+  # MONGOS
   # =========================================================
   mongo-empleados:
     image: mongo:7
-    container_name: mongo-empleados
+    restart: unless-stopped
     ports:
       - "27018:27017"
     volumes:
       - empleados-data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - microservices-net
 
-  # =========================================================
-  # MONGO DEPARTAMENTOS
-  # =========================================================
   mongo-departamentos:
     image: mongo:7
-    container_name: mongo-departamentos
+    restart: unless-stopped
     ports:
       - "27019:27017"
     volumes:
       - departamentos-data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - microservices-net
 
-  # =========================================================
-  # MONGO PERFILES
-  # =========================================================
   mongo-perfiles:
     image: mongo:7
-    container_name: mongo-perfiles
+    restart: unless-stopped
     ports:
       - "27020:27017"
     volumes:
       - perfiles-data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - microservices-net
 
-  # =========================================================
-  # MONGO NOTIFICACIONES
-  # =========================================================
   mongo-notificaciones:
     image: mongo:7
-    container_name: mongo-notificaciones
+    restart: unless-stopped
     ports:
       - "27021:27017"
     volumes:
       - notificaciones-data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - microservices-net
 
@@ -173,3 +249,5 @@ volumes:
   departamentos-data:
   perfiles-data:
   notificaciones-data:
+  grafana-data:
+  loki-data:

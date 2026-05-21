@@ -31,4 +31,30 @@ Los servicios se comunican entre sí mediante HTTP REST usando la red interna de
 Para levantar todo el sistema ejecutar:
 
 ```bash
-docker-compose up --build
+docker compose up --build
+```
+
+---
+
+## 📊 Pruebas de Observabilidad
+
+### Dashboard de métricas en Grafana
+
+> ![img.png](image.png)
+
+### Trazas distribuidas en Zipkin
+
+![img.png](img.png)
+
+### Alerta recibida en canal de notificación
+
+![img_1.png](img_1.png)
+
+---
+
+### Análisis de rendimiento
+
+**¿Qué servicio del ecosistema tardó más en responder y cómo lo identificaron?**
+![img_3.png](img_3.png)
+![img_2.png](img_2.png)
+El servicio que tardó más en responder fue el `perfiles-service`, identificado a través de las métricas de latencia en Grafana y las trazas en Zipkin.
